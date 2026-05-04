@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Internet MSV</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-white min-h-screen flex items-center justify-center p-4">
+
+<div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 space-y-5">
+  <h1 class="text-2xl font-bold text-center text-green-600">Daftar / Migrasi Internet MSV</h1>
+
+  <div class="grid gap-4">
+
+    <select id="mode" class="p-3 border rounded-lg">
+      <option value="baru">Pendaftaran Baru</option>
+      <option value="migrasi">Migrasi Paket</option>
+    </select>
+
+    <input id="nama" placeholder="Nama Lengkap" class="p-3 border rounded-lg" />
+    <input id="email" placeholder="Email" class="p-3 border rounded-lg" />
+    <input id="nomor" placeholder="No WhatsApp" class="p-3 border rounded-lg" />
+    <input id="alamat" placeholder="Alamat Lengkap" class="p-3 border rounded-lg" />
+
+    <select id="layanan" class="p-3 border rounded-lg">
+      <option>Reguler</option>
+      <option>Hemat</option>
+    </select>
+
+    <select id="paket" class="p-3 border rounded-lg"></select>
+
+    <input id="harga" readonly class="p-3 border rounded-lg bg-gray-100" />
+
+    <input id="jadwal" placeholder="Jadwal Instalasi" class="p-3 border rounded-lg" />
+
+    <textarea id="catatan" placeholder="Catatan" class="p-3 border rounded-lg"></textarea>
+
+    <button id="kirim" class="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg font-semibold transition">
+      Kirim ke WhatsApp
+    </button>
+
+  </div>
+</div>
+
+<script>
+const paketSelect = document.getElementById('paket');
+const hargaInput = document.getElementById('harga');
+const layananSelect = document.getElementById('layanan');
+const modeSelect = document.getElementById('mode');
+
+const data = {
+  baru: {
+    Reguler: {
+      '10 Mbps': 'Rp 150.000',
+      '20 Mbps': 'Rp 200.000'
+    },
+    Hemat: {
+      '20 Mbps Hemat': 'Rp 165.000'
+    }
+  },
+  migrasi: {
+    '10 Mbps': 'Rp 100.000',
+    '20 Mbps': 'Rp 165.000',
+    '30 Mbps': 'Rp 195.000',
+    '50 Mbps': 'Rp 225.000',
+    '100 Mbps': 'Rp 300.000',
+    'HEMAT 50 Mbps': 'Rp 125.000',
+    'HEMAT 100 Mbps': 'Rp 165.000'
+  }
+};
+
+function updatePaket() {
+  paketSelect.innerHTML = '';
+  const mode = modeSelect.value;
+
+  let list = {};
+
+  if (mode === 'baru') {
+    list = data.baru[layananSelect.value];
+  } else {
+    list = data.migrasi;
+  }
+
+  for (let p in list) {
+    let opt = document.createElement('option');
+    opt.value = p;
+    opt.text = p;
+    paketSelect.appendChild(opt);
+  }
+
+  hargaInput.value = list[paketSelect.value];
+}
+
+modeSelect.addEventListener('change', updatePaket);
+layananSelect.addEventListener('change', updatePaket);
+
+paketSelect.addEventListener('change', () => {
+  const mode = modeSelect.value;
+  if (mode === 'baru') {
+    hargaInput.value = data.baru[layananSelect.value][paketSelect.value];
+  } else {
+    hargaInput.value = data.migrasi[paketSelect.value];
+  }
+});
+
+updatePaket();
+
+// Kirim WA
+
+document.getElementById('kirim').addEventListener('click', () => {
+  const nama = document.getElementById('nama').value;
+  const nomor = document.getElementById('nomor').value;
+  const alamat = document.getElementById('alamat').value;
+  const paket = paketSelect.value;
+  const harga = hargaInput.value;
+  const mode = modeSelect.value;
+
+  let pesan = '';
+
+  if (mode === 'migrasi') {
+    pesan = `Halo, saya ingin migrasi paket\nNama: ${nama}\nNomor: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}`;
+  } else {
+    pesan = `Halo, saya ingin daftar baru\nNama: ${nama}\nNomor: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}`;
+  }
+
+  const url = `https://wa.me/6281345001401?text=${encodeURIComponent(pesan)}`;
+  window.open(url, '_blank');
+});
+
+</script>
+
+</body>
+</html>
