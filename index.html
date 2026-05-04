@@ -65,17 +65,15 @@ const idInput = document.getElementById('idLama');
 const paketHarga = {
   baru: {
     Reguler: {
-      'MSV Lite - 5 Mbps': 'Rp 100.000',
-      'MSV Family - 10 Mbps': 'Rp 150.000',
-      'MSV Biz - 15 Mbps': 'Rp 180.000',
-      'MSV Max - 20 Mbps': 'Rp 200.000',
-      'MSV Stream - 30 Mbps': 'Rp 250.000',
-      'MSV Pro - 50 Mbps': 'Rp 350.000'
+      'MSV Family - 10 Mbps': 'Rp 100.000',
+      'MSV Biz - 20 Mbps': 'Rp 165.000',
+      'MSV Max - 30 Mbps': 'Rp 195.000',
+      'MSV Stream - 50 Mbps': 'Rp 225.000',
+      'MSV Pro - 100 Mbps': 'Rp 300.000'
     },
     Hemat: {
-      'MSV Max HemAT - 20 Mbps': 'Rp 165.000',
-      'MSV Stream Hemat - 30 Mbps': 'Rp 195.000',
-      'MSV Pro Hemat - 50 Mbps': 'Rp 225.000'
+      'MSV Stream Hemat - 50 Mbps': 'Rp 125.000',
+      'MSV Pro Hemat - 100 Mbps': 'Rp 165.000'
     }
   },
   migrasi: {
@@ -153,7 +151,7 @@ function generateCustomerID() {
 }
 
 // GANTI dengan URL Web App kamu
-const WEBAPP_URL = https://script.google.com/macros/s/AKfycbypWX-DCL4SsbE3iu5_UYBZF9VttIlKgNH7R9OyDhJEmWFs5JivBvv59G1F69lGz4Q5/exec;
+const WEBAPP_URL = https://script.google.com/macros/s/AKfycbx8vLx40aHwKqfYcrBuVJ95ahl-P2F4xBKrDGsYJyMx13qsbmMmWO2FW3eH6Zw_V5Fx/exec;
 
 // Submit
 
@@ -179,7 +177,7 @@ document.getElementById('kirim').addEventListener('click', async () => {
 
     // cek ke Google Sheets
     try {
-      const res = await fetch(`${https://script.google.com/macros/s/AKfycbypWX-DCL4SsbE3iu5_UYBZF9VttIlKgNH7R9OyDhJEmWFs5JivBvv59G1F69lGz4Q5/exec}?id=${idVal}`);
+      const res = await fetch(`${https://script.google.com/macros/s/AKfycbx8vLx40aHwKqfYcrBuVJ95ahl-P2F4xBKrDGsYJyMx13qsbmMmWO2FW3eH6Zw_V5Fx/exec}?id=${idVal}`);
       const txt = await res.text();
       if (txt !== 'FOUND') {
         alert('ID tidak ditemukan di database!');
@@ -208,7 +206,7 @@ document.getElementById('kirim').addEventListener('click', async () => {
   const pesan = `ID Pelanggan: ${customerID}\nMode: ${mode}\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nStatus: ${pernah}\nCatatan: ${catatan}`;
 
   // simpan ke Sheets
-  fetch(https://script.google.com/macros/s/AKfycbypWX-DCL4SsbE3iu5_UYBZF9VttIlKgNH7R9OyDhJEmWFs5JivBvv59G1F69lGz4Q5/exec, {
+  fetch(https://script.google.com/macros/s/AKfycbx8vLx40aHwKqfYcrBuVJ95ahl-P2F4xBKrDGsYJyMx13qsbmMmWO2FW3eH6Zw_V5Fx/exec, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
