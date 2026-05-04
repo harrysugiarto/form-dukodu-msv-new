@@ -35,8 +35,8 @@
     <option value="Tidak">Belum Pernah</option>
   </select>
 
-  <!-- ID lama (khusus migrasi) -->
-  <input id="idLama" placeholder="Masukkan ID Pelanggan Lama (khusus migrasi)" class="p-3 border rounded-lg w-full hidden">
+  <!-- ID lama -->
+  <input id="idLama" placeholder="Masukkan ID Pelanggan Lama (bebas isi)" class="p-3 border rounded-lg w-full hidden">
 
   <select id="layanan" class="p-3 border rounded-lg w-full">
     <option>Reguler</option>
@@ -142,7 +142,7 @@ paketSelect.addEventListener('change', () => {
 updatePaketOptions();
 toggleIdField();
 
-// Generate ID
+// Generate ID baru
 function generateCustomerID() {
   const d = new Date();
   const y = d.getFullYear().toString().slice(-2);
@@ -154,34 +154,17 @@ function generateCustomerID() {
 
 // Submit
 document.getElementById('kirim').addEventListener('click', async () => {
+
   let customerID = '';
   const mode = modeSelect.value;
 
+  // 🔥 MIGRASI → BEBAS TANPA VALIDASI
   if (mode === 'migrasi') {
     const idVal = idInput.value.trim();
 
     if (!idVal) {
-      alert('Mohon isi ID Pelanggan Lama');
+      alert('Mohon isi ID Pelanggan');
       idInput.focus();
-      return;
-    }
-
-    const format = /^MSV-\d{6}-\d{4}$/;
-    if (!format.test(idVal)) {
-      alert('Format ID salah! Contoh: MSV-240504-1234');
-      idInput.focus();
-      return;
-    }
-
-    try {
-      const res = await fetch(`${WEBAPP_URL}?id=${idVal}`);
-      const txt = await res.text();
-      if (txt !== 'FOUND') {
-        alert('ID tidak ditemukan di database!');
-        return;
-      }
-    } catch {
-      alert('Gagal cek ID');
       return;
     }
 
@@ -200,9 +183,25 @@ document.getElementById('kirim').addEventListener('click', async () => {
   const harga = hargaInput.value;
   const catatan = document.getElementById('catatan').value;
 
-  const pesan = `ID Pelanggan: ${customerID}\nMode: ${mode}\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nStatus: ${pernah}\nCatatan: ${catatan}`;
+  // Validasi sederhana
+  if (!nama || !email || !nomor || !alamat || !jadwal) {
+    alert('Mohon lengkapi semua data!');
+    return;
+  }
 
-  // simpan ke Sheets
+  const pesan = `ID Pelanggan: ${customerID}
+Mode: ${mode}
+Nama: ${nama}
+Email: ${email}
+No: ${nomor}
+Alamat: ${alamat}
+Paket: ${paket}
+Harga: ${harga}
+Jadwal: ${jadwal}
+Status: ${pernah}
+Catatan: ${catatan}`;
+
+  // simpan ke Google Sheets (tanpa blocking)
   fetch(WEBAPP_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -215,8 +214,9 @@ document.getElementById('kirim').addEventListener('click', async () => {
     })
   });
 
-  // buka WA
+  // buka WhatsApp
   window.open(`https://wa.me/6281345001401?text=${encodeURIComponent(pesan)}`,'_blank');
+
 });
 </script>
 
