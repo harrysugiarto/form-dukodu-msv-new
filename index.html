@@ -148,10 +148,10 @@ document.getElementById('kirim').addEventListener('click', () => {
 
   if (mode === 'migrasi') {
     pesan = `ID Pelanggan: ${customerID}
-Halo, saya ingin MIGRASI paket\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nStatus: ${pernah}`;
+DUKODU-MSV - Halo, saya ingin MIGRASI paket\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nStatus: ${pernah}`;
   } else {
     pesan = `ID Pelanggan: ${customerID}
-Halo, saya ingin PASANG BARU\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nPernah Pasang: ${pernah}`;
+DUKODU-MSV - Halo, saya ingin mendaftar layanan internet fiber optic.\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nPernah Pasang: ${pernah}`;
   }
 
   const url = `https://wa.me/6281345001401?text=${encodeURIComponent(pesan)}`;
