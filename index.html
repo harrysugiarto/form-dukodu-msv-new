@@ -2,65 +2,66 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Form Internet MSV</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form MSV Internet</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-green-50 min-h-screen flex items-center justify-center p-4">
 
-<body class="bg-gradient-to-br from-green-50 to-white min-h-screen flex items-center justify-center p-4">
+<div class="w-full max-w-xl bg-white rounded-2xl shadow-xl p-6 space-y-4">
 
-<div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 space-y-5">
-  <h1 class="text-2xl font-bold text-center text-green-600">Daftar / Migrasi Internet MSV</h1>
+  <h1 class="text-2xl font-bold text-center text-green-600">
+    Pasang / Migrasi Internet 🚀
+  </h1>
 
-  <div class="grid gap-3">
+  <p class="text-center text-gray-500 text-sm">
+    Mulai 100rb • Cepat • Stabil
+  </p>
 
-    <select id="mode" class="p-3 border rounded-lg">
-      <option value="baru">Pendaftaran Baru</option>
-      <option value="migrasi">Migrasi Paket</option>
-    </select>
+  <select id="mode" class="p-3 border rounded-lg w-full">
+    <option value="baru">Pendaftaran Baru</option>
+    <option value="migrasi">Migrasi Paket</option>
+  </select>
 
-    <input id="nama" placeholder="Nama Lengkap" class="p-3 border rounded-lg" />
-    <input id="email" placeholder="Email" class="p-3 border rounded-lg" />
-    <input id="nomor" placeholder="No WhatsApp" class="p-3 border rounded-lg" />
-    <input id="alamat" placeholder="Alamat Lengkap" class="p-3 border rounded-lg" />
+  <input id="nama" placeholder="Nama Lengkap" class="p-3 border rounded-lg w-full">
+  <input id="nomor" placeholder="No WhatsApp" class="p-3 border rounded-lg w-full">
+  <input id="alamat" placeholder="Alamat" class="p-3 border rounded-lg w-full">
 
-    <select id="layanan" class="p-3 border rounded-lg">
-      <option>Reguler</option>
-      <option>Hemat</option>
-    </select>
+  <select id="layanan" class="p-3 border rounded-lg w-full">
+    <option>Reguler</option>
+    <option>Hemat</option>
+  </select>
 
-    <select id="paket" class="p-3 border rounded-lg"></select>
+  <select id="paket" class="p-3 border rounded-lg w-full"></select>
 
-    <input id="harga" readonly class="p-3 border rounded-lg bg-gray-100" />
+  <input id="harga" readonly class="p-3 border rounded-lg bg-gray-100 w-full">
 
-    <input id="jadwal" placeholder="Jadwal Instalasi" class="p-3 border rounded-lg" />
-    <textarea id="catatan" placeholder="Catatan" class="p-3 border rounded-lg"></textarea>
+  <button id="kirim" class="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg font-bold w-full">
+    Kirim via WhatsApp
+  </button>
 
-    <button id="kirim" class="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg font-semibold">
-      Kirim ke WhatsApp
-    </button>
-
-  </div>
 </div>
 
 <script>
+const modeSelect = document.getElementById('mode');
+const layananSelect = document.getElementById('layanan');
 const paketSelect = document.getElementById('paket');
 const hargaInput = document.getElementById('harga');
-const layananSelect = document.getElementById('layanan');
-const modeSelect = document.getElementById('mode');
 
-const data = {
+const paketHarga = {
   baru: {
     Reguler: {
-    '10 Mbps': 'Rp 100.000',
-    '20 Mbps': 'Rp 165.000',
-    '30 Mbps': 'Rp 195.000',
-    '50 Mbps': 'Rp 225.000',
-    '100 Mbps': 'Rp 300.000
+      'MSV Lite - 5 Mbps': 'Rp 100.000',
+      'MSV Family - 10 Mbps': 'Rp 150.000',
+      'MSV Biz - 15 Mbps': 'Rp 180.000',
+      'MSV Max - 20 Mbps': 'Rp 200.000',
+      'MSV Stream - 30 Mbps': 'Rp 250.000',
+      'MSV Pro - 50 Mbps': 'Rp 350.000'
     },
     Hemat: {
-    'HEMAT 50 Mbps': 'Rp 125.000',
-    'HEMAT 100 Mbps': 'Rp 165.000'
+      'MSV Max Hemat - 20 Mbps': 'Rp 165.000',
+      'MSV Stream Hemat - 30 Mbps': 'Rp 195.000',
+      'MSV Pro Hemat - 50 Mbps': 'Rp 225.000'
     }
   },
   migrasi: {
@@ -74,111 +75,67 @@ const data = {
   }
 };
 
-// update paket & harga
-function updatePaket() {
-  paketSelect.innerHTML = '';
-  hargaInput.value = '';
-
+function updatePaketOptions() {
   const mode = modeSelect.value;
-  let list = {};
+  paketSelect.innerHTML = '';
+
+  let options = {};
 
   if (mode === 'baru') {
-    list = data.baru[layananSelect.value];
+    layananSelect.style.display = 'block';
+    options = paketHarga.baru[layananSelect.value];
   } else {
-    list = data.migrasi;
+    layananSelect.style.display = 'none';
+    options = paketHarga.migrasi;
   }
 
-  Object.keys(list).forEach((p, i) => {
+  for (let paket in options) {
     let opt = document.createElement('option');
-    opt.value = p;
-    opt.text = p;
+    opt.value = paket;
+    opt.text = paket;
     paketSelect.appendChild(opt);
+  }
 
-    if (i === 0) {
-      paketSelect.value = p;
-      hargaInput.value = list[p];
-    }
-  });
+  hargaInput.value = options[paketSelect.value];
 }
 
-// update harga saat paket diganti
+modeSelect.addEventListener('change', updatePaketOptions);
+layananSelect.addEventListener('change', updatePaketOptions);
+
 paketSelect.addEventListener('change', () => {
   const mode = modeSelect.value;
 
   if (mode === 'baru') {
-    hargaInput.value = data.baru[layananSelect.value][paketSelect.value];
+    hargaInput.value = paketHarga.baru[layananSelect.value][paketSelect.value];
   } else {
-    hargaInput.value = data.migrasi[paketSelect.value];
+    hargaInput.value = paketHarga.migrasi[paketSelect.value];
   }
 });
 
-// sembunyikan layanan saat migrasi
-function toggleLayanan() {
-  if (modeSelect.value === 'migrasi') {
-    layananSelect.style.display = 'none';
-  } else {
-    layananSelect.style.display = 'block';
-  }
-}
+updatePaketOptions();
 
-modeSelect.addEventListener('change', () => {
-  toggleLayanan();
-  updatePaket();
-});
+// Kirim WA
 
-layananSelect.addEventListener('change', updatePaket);
-
-// init
-toggleLayanan();
-updatePaket();
-
-
-// kirim WA
 document.getElementById('kirim').addEventListener('click', () => {
-  const nama = document.getElementById('nama').value.trim();
-  const email = document.getElementById('email').value;
-  let nomor = document.getElementById('nomor').value.trim();
+  const nama = document.getElementById('nama').value;
+  const nomor = document.getElementById('nomor').value;
   const alamat = document.getElementById('alamat').value;
   const paket = paketSelect.value;
   const harga = hargaInput.value;
-  const jadwal = document.getElementById('jadwal').value;
-  const catatan = document.getElementById('catatan').value;
   const mode = modeSelect.value;
-
-  if (!nama || !nomor || !alamat) {
-    alert('Harap isi Nama, Nomor, dan Alamat!');
-    return;
-  }
-
-  // format nomor ke 62
-  nomor = nomor.replace(/^0/, '62');
 
   let pesan = '';
 
   if (mode === 'migrasi') {
-    pesan = `Halo, saya ingin migrasi paket
-Nama: ${nama}
-Nomor: ${nomor}
-Alamat: ${alamat}
-Paket: ${paket}
-Harga: ${harga}
-Jadwal: ${jadwal}
-Catatan: ${catatan}`;
+    pesan = `Halo, saya ingin MIGRASI paket\nNama: ${nama}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}`;
   } else {
-    pesan = `Halo, saya ingin daftar baru
-Nama: ${nama}
-Nomor: ${nomor}
-Email: ${email}
-Alamat: ${alamat}
-Paket: ${paket}
-Harga: ${harga}
-Jadwal: ${jadwal}
-Catatan: ${catatan}`;
+    pesan = `Halo, saya ingin PASANG BARU\nNama: ${nama}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}`;
   }
 
   const url = `https://wa.me/6281345001401?text=${encodeURIComponent(pesan)}`;
   window.open(url, '_blank');
 });
+
 </script>
 
 </body>
