@@ -62,6 +62,8 @@ const paketSelect = document.getElementById('paket');
 const hargaInput = document.getElementById('harga');
 const idInput = document.getElementById('idLama');
 
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx8vLx40aHwKqfYcrBuVJ95ahl-P2F4xBKrDGsYJyMx13qsbmMmWO2FW3eH6Zw_V5Fx/exec";
+
 const paketHarga = {
   baru: {
     Reguler: {
@@ -150,11 +152,7 @@ function generateCustomerID() {
   return `MSV-${y}${m}${day}-${rand}`;
 }
 
-// GANTI dengan URL Web App kamu
-const WEBAPP_URL = https://script.google.com/macros/s/AKfycbx8vLx40aHwKqfYcrBuVJ95ahl-P2F4xBKrDGsYJyMx13qsbmMmWO2FW3eH6Zw_V5Fx/exec;
-
 // Submit
-
 document.getElementById('kirim').addEventListener('click', async () => {
   let customerID = '';
   const mode = modeSelect.value;
@@ -175,9 +173,8 @@ document.getElementById('kirim').addEventListener('click', async () => {
       return;
     }
 
-    // cek ke Google Sheets
     try {
-      const res = await fetch(`${https://script.google.com/macros/s/AKfycbx8vLx40aHwKqfYcrBuVJ95ahl-P2F4xBKrDGsYJyMx13qsbmMmWO2FW3eH6Zw_V5Fx/exec}?id=${idVal}`);
+      const res = await fetch(`${WEBAPP_URL}?id=${idVal}`);
       const txt = await res.text();
       if (txt !== 'FOUND') {
         alert('ID tidak ditemukan di database!');
@@ -206,7 +203,7 @@ document.getElementById('kirim').addEventListener('click', async () => {
   const pesan = `ID Pelanggan: ${customerID}\nMode: ${mode}\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nStatus: ${pernah}\nCatatan: ${catatan}`;
 
   // simpan ke Sheets
-  fetch(https://script.google.com/macros/s/AKfycbx8vLx40aHwKqfYcrBuVJ95ahl-P2F4xBKrDGsYJyMx13qsbmMmWO2FW3eH6Zw_V5Fx/exec, {
+  fetch(WEBAPP_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -221,7 +218,6 @@ document.getElementById('kirim').addEventListener('click', async () => {
   // buka WA
   window.open(`https://wa.me/6281345001401?text=${encodeURIComponent(pesan)}`,'_blank');
 });
-
 </script>
 
 </body>
