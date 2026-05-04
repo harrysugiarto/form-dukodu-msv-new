@@ -35,6 +35,9 @@
     <option value="Tidak">Belum Pernah</option>
   </select>
 
+  <!-- ID lama (khusus migrasi) -->
+  <input id="idLama" placeholder="Masukkan ID Pelanggan Lama (khusus migrasi)" class="p-3 border rounded-lg w-full hidden">
+
   <select id="layanan" class="p-3 border rounded-lg w-full">
     <option>Reguler</option>
     <option>Hemat</option>
@@ -43,6 +46,8 @@
   <select id="paket" class="p-3 border rounded-lg w-full"></select>
 
   <input id="harga" readonly class="p-3 border rounded-lg bg-gray-100 w-full">
+
+  <textarea id="catatan" placeholder="Catatan tambahan (opsional)" class="p-3 border rounded-lg w-full"></textarea>
 
   <button id="kirim" class="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg font-bold w-full">
     🚀 Kirim via WhatsApp
@@ -55,19 +60,22 @@ const modeSelect = document.getElementById('mode');
 const layananSelect = document.getElementById('layanan');
 const paketSelect = document.getElementById('paket');
 const hargaInput = document.getElementById('harga');
+const idInput = document.getElementById('idLama');
 
 const paketHarga = {
   baru: {
     Reguler: {
-      'MSV Family - 10 Mbps': 'Rp 100.000',
-      'MSV Biz - 20 Mbps': 'Rp 165.000',
-      'MSV Max - 30 Mbps': 'Rp 195.000',
-      'MSV Stream - 50 Mbps': 'Rp 225.000',
-      'MSV Pro - 100 Mbps': 'Rp 300.000'
+      'MSV Lite - 5 Mbps': 'Rp 100.000',
+      'MSV Family - 10 Mbps': 'Rp 150.000',
+      'MSV Biz - 15 Mbps': 'Rp 180.000',
+      'MSV Max - 20 Mbps': 'Rp 200.000',
+      'MSV Stream - 30 Mbps': 'Rp 250.000',
+      'MSV Pro - 50 Mbps': 'Rp 350.000'
     },
     Hemat: {
-      'MSV Stream Hemat - 50 Mbps': 'Rp 125.000',
-      'MSV Pro Hemat - 1000 Mbps': 'Rp 165.000'
+      'MSV Max HemAT - 20 Mbps': 'Rp 165.000',
+      'MSV Stream Hemat - 30 Mbps': 'Rp 195.000',
+      'MSV Pro Hemat - 50 Mbps': 'Rp 225.000'
     }
   },
   migrasi: {
@@ -102,15 +110,28 @@ function updatePaketOptions() {
     paketSelect.appendChild(opt);
   }
 
-  hargaInput.value = options[paketSelect.value];
+  hargaInput.value = options[paketSelect.value] || '';
 }
 
-modeSelect.addEventListener('change', updatePaketOptions);
+function toggleIdField() {
+  if (modeSelect.value === 'migrasi') {
+    idInput.classList.remove('hidden');
+    idInput.setAttribute('required','required');
+  } else {
+    idInput.classList.add('hidden');
+    idInput.removeAttribute('required');
+    idInput.value = '';
+  }
+}
+
+modeSelect.addEventListener('change', () => {
+  toggleIdField();
+  updatePaketOptions();
+});
 layananSelect.addEventListener('change', updatePaketOptions);
 
 paketSelect.addEventListener('change', () => {
   const mode = modeSelect.value;
-
   if (mode === 'baru') {
     hargaInput.value = paketHarga.baru[layananSelect.value][paketSelect.value];
   } else {
@@ -119,21 +140,61 @@ paketSelect.addEventListener('change', () => {
 });
 
 updatePaketOptions();
+toggleIdField();
 
-// Generate ID Pelanggan
+// Generate ID
 function generateCustomerID() {
-  const date = new Date();
-  const y = date.getFullYear().toString().slice(-2);
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return `MSV-${y}${m}${d}-${rand}`;
+  const d = new Date();
+  const y = d.getFullYear().toString().slice(-2);
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  const rand = Math.floor(1000 + Math.random()*9000);
+  return `MSV-${y}${m}${day}-${rand}`;
 }
 
-// Kirim WA
+// GANTI dengan URL Web App kamu
+const WEBAPP_URL = https://script.google.com/macros/s/AKfycbypWX-DCL4SsbE3iu5_UYBZF9VttIlKgNH7R9OyDhJEmWFs5JivBvv59G1F69lGz4Q5/exec;
 
-document.getElementById('kirim').addEventListener('click', () => {
-  const customerID = generateCustomerID();
+// Submit
+
+document.getElementById('kirim').addEventListener('click', async () => {
+  let customerID = '';
+  const mode = modeSelect.value;
+
+  if (mode === 'migrasi') {
+    const idVal = idInput.value.trim();
+
+    if (!idVal) {
+      alert('Mohon isi ID Pelanggan Lama');
+      idInput.focus();
+      return;
+    }
+
+    const format = /^MSV-\d{6}-\d{4}$/;
+    if (!format.test(idVal)) {
+      alert('Format ID salah! Contoh: MSV-240504-1234');
+      idInput.focus();
+      return;
+    }
+
+    // cek ke Google Sheets
+    try {
+      const res = await fetch(`${https://script.google.com/macros/s/AKfycbypWX-DCL4SsbE3iu5_UYBZF9VttIlKgNH7R9OyDhJEmWFs5JivBvv59G1F69lGz4Q5/exec}?id=${idVal}`);
+      const txt = await res.text();
+      if (txt !== 'FOUND') {
+        alert('ID tidak ditemukan di database!');
+        return;
+      }
+    } catch {
+      alert('Gagal cek ID');
+      return;
+    }
+
+    customerID = idVal;
+  } else {
+    customerID = generateCustomerID();
+  }
+
   const nama = document.getElementById('nama').value;
   const email = document.getElementById('email').value;
   const nomor = document.getElementById('nomor').value;
@@ -142,20 +203,25 @@ document.getElementById('kirim').addEventListener('click', () => {
   const pernah = document.getElementById('pernah').value;
   const paket = paketSelect.value;
   const harga = hargaInput.value;
-  const mode = modeSelect.value;
+  const catatan = document.getElementById('catatan').value;
 
-  let pesan = '';
+  const pesan = `ID Pelanggan: ${customerID}\nMode: ${mode}\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nStatus: ${pernah}\nCatatan: ${catatan}`;
 
-  if (mode === 'migrasi') {
-    pesan = `ID Pelanggan: ${customerID}
-DUKODU-MSV - Halo, saya ingin MIGRASI paket\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nStatus: ${pernah}`;
-  } else {
-    pesan = `ID Pelanggan: ${customerID}
-DUKODU-MSV - Halo, saya ingin mendaftar layanan internet fiber optic.\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nPernah Pasang: ${pernah}`;
-  }
+  // simpan ke Sheets
+  fetch(https://script.google.com/macros/s/AKfycbypWX-DCL4SsbE3iu5_UYBZF9VttIlKgNH7R9OyDhJEmWFs5JivBvv59G1F69lGz4Q5/exec, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: customerID,
+      nama, email, nomor, alamat,
+      mode,
+      layanan: (mode==='baru'?layananSelect.value:'-'),
+      paket, harga, jadwal, pernah, catatan
+    })
+  });
 
-  const url = `https://wa.me/6281345001401?text=${encodeURIComponent(pesan)}`;
-  window.open(url, '_blank');
+  // buka WA
+  window.open(`https://wa.me/6281345001401?text=${encodeURIComponent(pesan)}`,'_blank');
 });
 
 </script>
