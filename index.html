@@ -2,16 +2,17 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Form Internet MSV</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gradient-to-br from-green-50 to-white min-h-screen flex items-center justify-center p-4">
 
 <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 space-y-5">
   <h1 class="text-2xl font-bold text-center text-green-600">Daftar / Migrasi Internet MSV</h1>
 
-  <div class="grid gap-4">
+  <div class="grid gap-3">
 
     <select id="mode" class="p-3 border rounded-lg">
       <option value="baru">Pendaftaran Baru</option>
@@ -33,10 +34,9 @@
     <input id="harga" readonly class="p-3 border rounded-lg bg-gray-100" />
 
     <input id="jadwal" placeholder="Jadwal Instalasi" class="p-3 border rounded-lg" />
-
     <textarea id="catatan" placeholder="Catatan" class="p-3 border rounded-lg"></textarea>
 
-    <button id="kirim" class="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg font-semibold transition">
+    <button id="kirim" class="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg font-semibold">
       Kirim ke WhatsApp
     </button>
 
@@ -70,10 +70,12 @@ const data = {
   }
 };
 
+// update paket & harga
 function updatePaket() {
   paketSelect.innerHTML = '';
-  const mode = modeSelect.value;
+  hargaInput.value = '';
 
+  const mode = modeSelect.value;
   let list = {};
 
   if (mode === 'baru') {
@@ -82,21 +84,23 @@ function updatePaket() {
     list = data.migrasi;
   }
 
-  for (let p in list) {
+  Object.keys(list).forEach((p, i) => {
     let opt = document.createElement('option');
     opt.value = p;
     opt.text = p;
     paketSelect.appendChild(opt);
-  }
 
-  hargaInput.value = list[paketSelect.value];
+    if (i === 0) {
+      paketSelect.value = p;
+      hargaInput.value = list[p];
+    }
+  });
 }
 
-modeSelect.addEventListener('change', updatePaket);
-layananSelect.addEventListener('change', updatePaket);
-
+// update harga saat paket diganti
 paketSelect.addEventListener('change', () => {
   const mode = modeSelect.value;
+
   if (mode === 'baru') {
     hargaInput.value = data.baru[layananSelect.value][paketSelect.value];
   } else {
@@ -104,30 +108,73 @@ paketSelect.addEventListener('change', () => {
   }
 });
 
+// sembunyikan layanan saat migrasi
+function toggleLayanan() {
+  if (modeSelect.value === 'migrasi') {
+    layananSelect.style.display = 'none';
+  } else {
+    layananSelect.style.display = 'block';
+  }
+}
+
+modeSelect.addEventListener('change', () => {
+  toggleLayanan();
+  updatePaket();
+});
+
+layananSelect.addEventListener('change', updatePaket);
+
+// init
+toggleLayanan();
 updatePaket();
 
-// Kirim WA
 
+// kirim WA
 document.getElementById('kirim').addEventListener('click', () => {
-  const nama = document.getElementById('nama').value;
-  const nomor = document.getElementById('nomor').value;
+  const nama = document.getElementById('nama').value.trim();
+  const email = document.getElementById('email').value;
+  let nomor = document.getElementById('nomor').value.trim();
   const alamat = document.getElementById('alamat').value;
   const paket = paketSelect.value;
   const harga = hargaInput.value;
+  const jadwal = document.getElementById('jadwal').value;
+  const catatan = document.getElementById('catatan').value;
   const mode = modeSelect.value;
+
+  if (!nama || !nomor || !alamat) {
+    alert('Harap isi Nama, Nomor, dan Alamat!');
+    return;
+  }
+
+  // format nomor ke 62
+  nomor = nomor.replace(/^0/, '62');
 
   let pesan = '';
 
   if (mode === 'migrasi') {
-    pesan = `Halo, saya ingin migrasi paket\nNama: ${nama}\nNomor: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}`;
+    pesan = `Halo, saya ingin migrasi paket
+Nama: ${nama}
+Nomor: ${nomor}
+Alamat: ${alamat}
+Paket: ${paket}
+Harga: ${harga}
+Jadwal: ${jadwal}
+Catatan: ${catatan}`;
   } else {
-    pesan = `Halo, saya ingin daftar baru\nNama: ${nama}\nNomor: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}`;
+    pesan = `Halo, saya ingin daftar baru
+Nama: ${nama}
+Nomor: ${nomor}
+Email: ${email}
+Alamat: ${alamat}
+Paket: ${paket}
+Harga: ${harga}
+Jadwal: ${jadwal}
+Catatan: ${catatan}`;
   }
 
   const url = `https://wa.me/6281345001401?text=${encodeURIComponent(pesan)}`;
   window.open(url, '_blank');
 });
-
 </script>
 
 </body>
