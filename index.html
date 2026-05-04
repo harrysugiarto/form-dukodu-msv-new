@@ -122,9 +122,20 @@ paketSelect.addEventListener('change', () => {
 
 updatePaketOptions();
 
+// Generate ID Pelanggan
+function generateCustomerID() {
+  const date = new Date();
+  const y = date.getFullYear().toString().slice(-2);
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `MSV-${y}${m}${d}-${rand}`;
+}
+
 // Kirim WA
 
 document.getElementById('kirim').addEventListener('click', () => {
+  const customerID = generateCustomerID();
   const nama = document.getElementById('nama').value;
   const email = document.getElementById('email').value;
   const nomor = document.getElementById('nomor').value;
@@ -138,9 +149,11 @@ document.getElementById('kirim').addEventListener('click', () => {
   let pesan = '';
 
   if (mode === 'migrasi') {
-    pesan = `Halo, saya ingin MIGRASI paket\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nStatus: ${pernah}`;
+    pesan = `ID Pelanggan: ${customerID}
+Halo, saya ingin MIGRASI paket\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nStatus: ${pernah}`;
   } else {
-    pesan = `Halo, saya ingin PASANG BARU\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nPernah Pasang: ${pernah}`;
+    pesan = `ID Pelanggan: ${customerID}
+Halo, saya ingin PASANG BARU\nNama: ${nama}\nEmail: ${email}\nNo: ${nomor}\nAlamat: ${alamat}\nPaket: ${paket}\nHarga: ${harga}\nJadwal: ${jadwal}\nPernah Pasang: ${pernah}`;
   }
 
   const url = `https://wa.me/6281345001401?text=${encodeURIComponent(pesan)}`;
